@@ -1,9 +1,10 @@
 import tkinter as tk
 from PIL import ImageTk, Image
 
-# TODO: Add additional entry for Mass and Concentration for alt values
-# TODO: Add Calculate Button for Mass and Concentration
-# TODO: Add Swap Alt Value Checkbox
+#// TODO: Add additional entry for Mass and Concentration for alt values
+#// TODO: Add Calculate Button for Mass and Concentration EDIT: Only One Calculate Button is needed and I've updated it to consider alt values too
+#// TODO: Add Swap Alt Value Checkbox
+# TODO: Make the Swap Alt Values Checkbox actually work
 
 root = tk.Tk()
 root.title("MolCalc v1.0")
@@ -24,7 +25,8 @@ def Calculate():
     global OUTPUT_VALUES
     OUTPUT_VALUES = []
     value = input_entry.get()
-    
+
+    # If the second box is required, store its value in alt_value
     if current_unit_type.converfactor == None:
         alt_value = input_entry_alt.get()
         try: 
@@ -37,6 +39,27 @@ def Calculate():
     except ValueError:
         return ShowOutput(["", "", "", "", ""])
     
+    # ! kms for naming variables
+    altput_value1 = output_entry_alt1.get() 
+    altput_value2 = output_entry_alt2.get()
+
+    # For Mass and Concentration, retreive the values of altput, if illegal, reset it to 1
+    try:
+        altput_value1 = float(altput_value1)
+    except ValueError:
+        altput_value1 = float(1.0)
+        output_entry_alt1.delete(0, tk.END)
+        output_entry_alt1.insert(0, 1)
+
+    try:
+        altput_value2 = float(altput_value2)
+    except ValueError:
+        altput_value2 = float(1.0)
+        output_entry_alt2.delete(0, tk.END)
+        output_entry_alt2.insert(0, 1)
+
+        
+    
     # Convert input value into moles
     if current_unit_type.converfactor == None:
         value = (value/alt_value)
@@ -46,7 +69,10 @@ def Calculate():
     # Convert moles into each unit type and append to OUTPUT_VALUES list
     for unittype in RADIOBUTTON_OPTIONS:
         if unittype.converfactor == None:
-            value_new = (value*1)
+            if unittype.name == "Mass":
+                value_new = (value*altput_value1)
+            else:
+                value_new = (value*altput_value2)
         else:
             value_new = (value*unittype.converfactor)
         value_new = round(value_new, 4)
@@ -128,7 +154,7 @@ conversionid.set(0)
 # Buttons in Input Frame
 input_entry = tk.Entry(input_frame, width=10)
 input_entry_alt = tk.Entry(input_frame, width=10, state="disabled")
-calculation_button = tk.Button(root, text="Calculate (Reset 2nd Vals to 1)", command=Calculate)
+calculation_button = tk.Button(root, text="Convert", command=Calculate)
 #input_button = tk.Button(input_frame, text="honestly idk", command=Button)
 
 # Entries in Output Frame
@@ -152,8 +178,8 @@ state_checkbox1.set(0)
 state_checkbox2 = tk.IntVar()
 state_checkbox2.set(0)
 
-output_checkbox1 = tk.Checkbutton(output_frame, text="Swap", variable=state_checkbox1, onvalue=1, offvalue=0, command=ToggleAltValue)
-output_checkbox2 = tk.Checkbutton(output_frame, text="Swap", variable=state_checkbox2, onvalue=1, offvalue=0, command=ToggleAltValue)
+output_checkbox1 = tk.Checkbutton(output_frame, text="Swap", variable=state_checkbox1, onvalue=1, offvalue=0, command=lambda: ToggleAltValue("Box1"))
+output_checkbox2 = tk.Checkbutton(output_frame, text="Swap", variable=state_checkbox2, onvalue=1, offvalue=0, command=lambda: ToggleAltValue("Box1"))
 
 
 OUTPUT_ENTRIES = [output_entry_mol, output_entry_g, output_entry_v, output_entry_n, output_entry_cv]
