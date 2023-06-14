@@ -133,6 +133,9 @@ output_entry_v = tk.Entry(output_frame, width=10, state="readonly")
 output_entry_n = tk.Entry(output_frame, width=10, state="readonly")
 output_entry_cv = tk.Entry(output_frame, width=10, state="readonly")
 
+# Checkboxes in Output Frame
+output_checkbox1 = tk.Checkbutton(output_frame, )
+
 OUTPUT_ENTRIES = [output_entry_mol, output_entry_g, output_entry_v, output_entry_n, output_entry_cv]
 
 # ? Originally wanted this to just be calling SetUnitType() but kept getting errors at .forget() so here's me rewriting it
