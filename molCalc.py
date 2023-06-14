@@ -63,6 +63,8 @@ def ShowOutput(OUTPUT_VALUES):
         entry.insert(0, OUTPUT_VALUES[entry_index])
         entry["state"] = "readonly"
 
+        
+
 
 # When a Radio Button is pressed in the input
 # current_unit_type holds the UnitType of the currently selected unit
@@ -89,7 +91,7 @@ def SetUnitType():
     else:
         input_name_alt = tk.Label(input_frame, text=current_unit_type.alt_name, width=15)
         input_entry_alt["state"] = "normal"
-    
+
     input_name_alt.grid(row=1, column=3, sticky="w")
 
     input_unit = tk.Label(input_frame, text=current_unit_type.unit, width=10, anchor="w")
@@ -97,6 +99,9 @@ def SetUnitType():
 
     input_unit_alt = tk.Label(input_frame, text=current_unit_type.alt_unit, width=10, anchor="w")
     input_unit_alt.grid(row=2, column=4, sticky="w")
+
+def ToggleAltValue():
+    pass
 
 # Defining the units in the UnitType class, then putting them into RADIOBUTTON_OPTIONS list so its index can be accessed by the For Loop
 Unit_mol = UnitType("Moles", "mol", None, None, 1)
@@ -123,7 +128,7 @@ conversionid.set(0)
 # Buttons in Input Frame
 input_entry = tk.Entry(input_frame, width=10)
 input_entry_alt = tk.Entry(input_frame, width=10, state="disabled")
-calculation_button = tk.Button(root, text="Calculate", command=Calculate)
+calculation_button = tk.Button(root, text="Calculate (Reset 2nd Vals to 1)", command=Calculate)
 #input_button = tk.Button(input_frame, text="honestly idk", command=Button)
 
 # Entries in Output Frame
@@ -133,8 +138,23 @@ output_entry_v = tk.Entry(output_frame, width=10, state="readonly")
 output_entry_n = tk.Entry(output_frame, width=10, state="readonly")
 output_entry_cv = tk.Entry(output_frame, width=10, state="readonly")
 
+# Additional Labels and Entries for AltValues in Output Frame
+output_entry_alt1 = tk.Entry(output_frame, width=10)
+output_entry_alt2 = tk.Entry(output_frame, width=10)
+
+output_label_alt1 = tk.Label(output_frame, text="g/mol", width=5, anchor="w")
+output_label_alt2 = tk.Label(output_frame, text="L", width=5, anchor="w")
+
 # Checkboxes in Output Frame
-output_checkbox1 = tk.Checkbutton(output_frame, )
+state_checkbox1 = tk.IntVar()
+state_checkbox1.set(0)
+
+state_checkbox2 = tk.IntVar()
+state_checkbox2.set(0)
+
+output_checkbox1 = tk.Checkbutton(output_frame, text="Swap", variable=state_checkbox1, onvalue=1, offvalue=0, command=ToggleAltValue)
+output_checkbox2 = tk.Checkbutton(output_frame, text="Swap", variable=state_checkbox2, onvalue=1, offvalue=0, command=ToggleAltValue)
+
 
 OUTPUT_ENTRIES = [output_entry_mol, output_entry_g, output_entry_v, output_entry_n, output_entry_cv]
 
@@ -167,10 +187,19 @@ output_entry_v.grid(row=2, column=1)
 output_entry_n.grid(row=3, column=1)
 output_entry_cv.grid(row=4, column=1)
 
+output_entry_alt1.grid(row=1, column=3)
+output_entry_alt2.grid(row=4, column=3)
+
+output_checkbox1.grid(row=1, column=5)
+output_checkbox2.grid(row=4, column=5)
+
+output_label_alt1.grid(row=1, column=4)
+output_label_alt2.grid(row=4, column=4)
+
 
 for unittype in RADIOBUTTON_OPTIONS:
-    tk.Label(output_frame, text=f"{unittype.name}: ", width=20, anchor="w").grid(row=RADIOBUTTON_OPTIONS.index(unittype), column=0)
-    tk.Label(output_frame, text=unittype.unit, width=20, anchor="w").grid(row=RADIOBUTTON_OPTIONS.index(unittype), column=2)
+    tk.Label(output_frame, text=f"{unittype.name}: ", width=15, anchor="w").grid(row=RADIOBUTTON_OPTIONS.index(unittype), column=0)
+    tk.Label(output_frame, text=unittype.unit, width=11, anchor="w").grid(row=RADIOBUTTON_OPTIONS.index(unittype), column=2)
 
 # White Space
 tk.Label(input_frame, text=" ").grid(row=3, column=0)
