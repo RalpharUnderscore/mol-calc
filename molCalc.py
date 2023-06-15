@@ -1,17 +1,22 @@
 import tkinter as tk
-from PIL import ImageTk, Image
 
 #// TODO: Add additional entry for Mass and Concentration for alt values
 #// TODO: Add Calculate Button for Mass and Concentration EDIT: Only One Calculate Button is needed and I've updated it to consider alt values too
 #// TODO: Add Swap Alt Value Checkbox
-# TODO: Make the Swap Alt Values Checkbox actually work
+#// TODO: Make the Swap Alt Values Checkbox actually work
 
 root = tk.Tk()
 root.title("MolCalc v1.0")
-root.geometry("480x500")
+root.geometry("480x400")
+root.resizable(False, False)
 
-PROGRAM_ICON = ImageTk.PhotoImage(Image.open("placeholder.jpg"))
-root.iconphoto(True, PROGRAM_ICON)
+try:
+    from PIL import ImageTk, Image
+    PROGRAM_ICON = ImageTk.PhotoImage(Image.open("placeholder.jpg"))
+    root.iconphoto(True, PROGRAM_ICON)
+except ModuleNotFoundError:
+    pass    # Don't wanna download software without the user knowing. This one's not important anyway.
+
 
 class UnitType:
     def __init__(self, name, unit, alt_name, alt_unit, converfactor):
@@ -58,8 +63,6 @@ def Calculate():
         output_entry_alt2.delete(0, tk.END)
         output_entry_alt2.insert(0, 1)
 
-        
-    
     # Convert input value into moles
     if current_unit_type.converfactor == None:
         value = (value/alt_value)
@@ -77,17 +80,17 @@ def Calculate():
                     value_new = (value*altput_value1)
             else:                                               # If concentration
                 if state_checkbox2.get() == 1:                      # If swapped values for concentration, the formula is reversed
-                    value_new = (altput_value2/value)
+                    value_new = (altput_value2*value) # ? Turns out I messed up the concentration formula earlier so now this is what this part of the code looks like
                 else:                                       
-                    value_new = (value*altput_value2)
+                    value_new = (value/altput_value2)
         else:                                               # Otherwise, carry on by multiplying with its conversion factor
             value_new = (value*unittype.converfactor)
-        value_new = round(value_new, 4)
+        value_new = round(value_new, roundto.get())
+        if roundto.get() == 0:
+            value_new = int(value_new)
         OUTPUT_VALUES.append(value_new)
 
     ShowOutput(OUTPUT_VALUES)
-    
-
 
 def ShowOutput(OUTPUT_VALUES):
     # Inserts output from OUTPUT_VALUES into each entry
@@ -133,7 +136,6 @@ def SetUnitType():
     input_unit_alt = tk.Label(input_frame, text=current_unit_type.alt_unit, width=10, anchor="w")
     input_unit_alt.grid(row=2, column=4, sticky="w")
 
-
 # Checkbox1 swaps g and g/mol
 def ToggleAltValueOne():
     global output_unit_g
@@ -165,9 +167,7 @@ def ToggleAltValueOne():
     output_unit_g.grid(row=1, column=2, sticky="w")
     output_label_alt1.grid(row=1, column=4, sticky="w")
 
-
-
-
+# Checkbox1 swaps mol/L and L
 def ToggleAltValueTwo():
     global output_unit_cv
     global output_label_alt2
@@ -239,7 +239,7 @@ output_entry_cv = tk.Entry(output_frame, width=10, state="readonly")
 # Labels for units in Output Frame
 output_unit_mol = tk.Label(output_frame, text="mol", width=11, anchor="w")
 output_unit_g = tk.Label(output_frame, text="g", width=11, anchor="w")
-output_unit_v = tk.Label(output_frame, text="L(@STP)", width=11, anchor="w")
+output_unit_v = tk.Label(output_frame, text="L (@STP)", width=11, anchor="w")
 output_unit_n = tk.Label(output_frame, text="x10^23 atoms", width=11, anchor="w")
 output_unit_cv = tk.Label(output_frame, text="mol/L", width=11, anchor="w")
 
@@ -259,6 +259,12 @@ state_checkbox2.set(0)
 
 output_checkbox1 = tk.Checkbutton(output_frame, text="Swap", variable=state_checkbox1, onvalue=1, offvalue=0, command=ToggleAltValueOne)
 output_checkbox2 = tk.Checkbutton(output_frame, text="Swap", variable=state_checkbox2, onvalue=1, offvalue=0, command=ToggleAltValueTwo)
+
+# Rounding Slider in Output Frame
+roundto = tk.IntVar()
+roundto.set(2)
+
+output_slider = tk.Scale(output_frame, from_=0, to=8, variable=roundto, orient="horizontal")
 
 
 OUTPUT_ENTRIES = [output_entry_mol, output_entry_g, output_entry_v, output_entry_n, output_entry_cv]
@@ -307,6 +313,8 @@ output_checkbox2.grid(row=4, column=5)
 output_label_alt1.grid(row=1, column=4)
 output_label_alt2.grid(row=4, column=4)
 
+tk.Label(output_frame, text="Decimals:").grid(row=6, column=1)
+output_slider.grid(row=6, column=2)
 
 for unittype in RADIOBUTTON_OPTIONS:
     tk.Label(output_frame, text=f"{unittype.name}: ", width=15, anchor="w").grid(row=RADIOBUTTON_OPTIONS.index(unittype), column=0)
@@ -314,6 +322,7 @@ for unittype in RADIOBUTTON_OPTIONS:
 # White Space
 tk.Label(input_frame, text=" ").grid(row=3, column=0)
 tk.Label(output_frame, text=" ").grid(row=5, column=0)
+tk.Label(output_frame, text=" ").grid(row=7, column=0)
 
 # Yeah
 root.mainloop()
