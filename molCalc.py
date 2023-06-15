@@ -4,6 +4,7 @@ import tkinter as tk
 #// TODO: Add Calculate Button for Mass and Concentration EDIT: Only One Calculate Button is needed and I've updated it to consider alt values too
 #// TODO: Add Swap Alt Value Checkbox
 #// TODO: Make the Swap Alt Values Checkbox actually work
+#//
 
 root = tk.Tk()
 root.title("MolCalc v1.0")
