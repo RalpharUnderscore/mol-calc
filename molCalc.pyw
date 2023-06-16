@@ -65,7 +65,10 @@ def Calculate():
 
     # Convert input value into moles
     if current_unit_type.converfactor == None:
-        value = (value/alt_value)
+        if current_unit_type.name == "Concentration":
+            value = (value*alt_value)
+        else:
+            value = (value/alt_value)
     else:
         value = (value/current_unit_type.converfactor)
 
