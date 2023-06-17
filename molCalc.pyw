@@ -14,7 +14,7 @@ try:
     from PIL import ImageTk, Image
     PROGRAM_ICON = ImageTk.PhotoImage(Image.open("placeholder.jpg"))
     root.iconphoto(True, PROGRAM_ICON)
-except ModuleNotFoundError:
+except (ModuleNotFoundError, FileNotFoundError):
     pass    # Don't wanna download software without the user knowing. This one's not important anyway.
 
 
