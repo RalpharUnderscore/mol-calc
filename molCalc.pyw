@@ -1,12 +1,12 @@
 import tkinter as tk
 
-#// TODO: Add additional entry for Mass and Concentration for alt values
-#// TODO: Add Calculate Button for Mass and Concentration EDIT: Only One Calculate Button is needed and I've updated it to consider alt values too
+#// TODO: Add additional entry for Mass and Molarity for alt values
+#// TODO: Add Calculate Button for Mass and Molarity EDIT: Only One Calculate Button is needed and I've updated it to consider alt values too
 #// TODO: Add Swap Alt Value Checkbox
 #// TODO: Make the Swap Alt Values Checkbox actually work
 
 root = tk.Tk()
-root.title("MolCalc v1.0")
+root.title("MolCalc v1.1")
 root.geometry("480x400")
 root.resizable(False, False)
 
@@ -28,7 +28,9 @@ class UnitType:
     
 def Calculate():
     global OUTPUT_VALUES
+    global ROUNDED_FLAGS
     OUTPUT_VALUES = []
+    ROUNDED_FLAGS = []
     value = input_entry.get()
 
     # If the second box is required, store its value in alt_value
@@ -37,18 +39,18 @@ def Calculate():
         try: 
             alt_value = float(alt_value)
         except ValueError:
-            return ShowOutput(["", "", "", "", ""])
+            return ShowOutput(["", "", "", "", ""], [False, False, False, False, False])
 
     try:
         value = float(value)
     except ValueError:
-        return ShowOutput(["", "", "", "", ""])
+        return ShowOutput(["", "", "", "", ""], [False, False, False, False, False])
     
     # ! kms for naming variables
     altput_value1 = output_entry_alt1.get() 
     altput_value2 = output_entry_alt2.get()
 
-    # For Mass and Concentration, retreive the values of altput, if illegal, reset it to 1
+    # For Mass and Molarity, retreive the values of altput, if illegal, reset it to 1
     try:
         altput_value1 = float(altput_value1)
     except ValueError:
@@ -65,7 +67,7 @@ def Calculate():
 
     # Convert input value into moles
     if current_unit_type.converfactor == None:
-        if current_unit_type.name == "Concentration":
+        if current_unit_type.name == "Molarity":
             value = (value*alt_value)
         else:
             value = (value/alt_value)
@@ -75,34 +77,56 @@ def Calculate():
     # ! Horrendous code lol
     # Convert moles into each unit type and append to OUTPUT_VALUES list
     for unittype in RADIOBUTTON_OPTIONS:
-        if unittype.converfactor == None:                   # If mass or concentration
+        if unittype.converfactor == None:                   # If mass or Molarity
             if unittype.name == "Mass":                         # If mass
                 if state_checkbox1.get() == 1:                      # If swapped values for mass, the formula is reversed
                     value_new = (altput_value1/value)
                 else:
                     value_new = (value*altput_value1)
-            else:                                               # If concentration
-                if state_checkbox2.get() == 1:                      # If swapped values for concentration, the formula is reversed
-                    value_new = (altput_value2*value) # ? Turns out I messed up the concentration formula earlier so now this is what this part of the code looks like
+            else:                                               # If Molarity
+                if state_checkbox2.get() == 1:                      # If swapped values for Molarity, the formula is reversed
+                    value_new = (altput_value2*value) # ? Turns out I messed up the Molarity formula earlier so now this is what this part of the code looks like
                 else:                                       
                     value_new = (value/altput_value2)
         else:                                               # Otherwise, carry on by multiplying with its conversion factor
             value_new = (value*unittype.converfactor)
-        value_new = round(value_new, roundto.get())
-        if roundto.get() == 0:
-            value_new = int(value_new)
-        OUTPUT_VALUES.append(value_new)
+        value_rounded = round(value_new, roundto.get())
+        if roundto.get() == 0:                              # If round to 0 decimals (nearest integer, return an integer to hide .0s)
+            value_rounded = int(value_rounded)
 
-    ShowOutput(OUTPUT_VALUES)
+        OUTPUT_VALUES.append(value_rounded)
 
-def ShowOutput(OUTPUT_VALUES):
+        if value_rounded == 0 and value_new != 0:           # If value is rounded to 0, show the rounded flag
+            ROUNDED_FLAGS.append(True)
+        else:
+            ROUNDED_FLAGS.append(False)
+
+
+
+    ShowOutput(OUTPUT_VALUES, ROUNDED_FLAGS)
+
+def ShowOutput(OUTPUT_VALUES, ROUNDED_FLAGS):
+    global output_starinfo
     # Inserts output from OUTPUT_VALUES into each entry
-    for entry in OUTPUT_ENTRIES:
+    for entry, flag in zip(OUTPUT_ENTRIES, ROUNDED_FLAGS):
         entry_index = OUTPUT_ENTRIES.index(entry)
         entry["state"] = "normal"
+
         entry.delete(0, tk.END)
         entry.insert(0, OUTPUT_VALUES[entry_index])
+        
+        if flag:                        # Append a "*" if rounded to 0
+            entry.insert(0, "*")
+        
         entry["state"] = "readonly"    
+
+    if True in ROUNDED_FLAGS:
+        output_starinfo["text"] = "* - Refers to a small number that has been rounded down to zero. However its real value isn't."
+    else:
+        output_starinfo["text"] = " "
+
+    
+
 
 
 # When a Radio Button is pressed in the input
@@ -159,9 +183,9 @@ def ToggleAltValueOne():
     # Swapping the values from both entries
     output_entry_g["state"] = "normal"
     
-    intermediate_val = output_entry_g.get()
+    intermediate_val = output_entry_g.get().replace("*", "")            # .replace("*", "") removes "*" indicator from rounding to zeros
     output_entry_g.delete(0, tk.END)
-    output_entry_g.insert(0, output_entry_alt1.get())
+    output_entry_g.insert(0, output_entry_alt1.get().replace("*", ""))
     output_entry_alt1.delete(0, tk.END)
     output_entry_alt1.insert(0, intermediate_val)
 
@@ -190,9 +214,9 @@ def ToggleAltValueTwo():
     # Swapping the values from both entries
     output_entry_cv["state"] = "normal"
     
-    intermediate_val = output_entry_cv.get()
+    intermediate_val = output_entry_cv.get().replace("*", "") 
     output_entry_cv.delete(0, tk.END)
-    output_entry_cv.insert(0, output_entry_alt2.get())
+    output_entry_cv.insert(0, output_entry_alt2.get().replace("*", "") )
     output_entry_alt2.delete(0, tk.END)
     output_entry_alt2.insert(0, intermediate_val)
 
@@ -209,7 +233,7 @@ Unit_mol = UnitType("Moles", "mol", None, None, 1)
 Unit_g = UnitType("Mass", "g", "Molecular Weight", "g/mol", None)
 Unit_v = UnitType("Volume", "L (@STP)", None, None, 22.4)
 Unit_n = UnitType("Particles", "x10^23 atoms", None, None, 6.02)
-Unit_cv = UnitType("Concentration", "mol/L", "Volume", "L", None)
+Unit_cv = UnitType("Molarity", "mol/L", "Volume", "L", None)
 
 RADIOBUTTON_OPTIONS = [Unit_mol, Unit_g, Unit_v, Unit_n, Unit_cv]
 
@@ -252,6 +276,8 @@ output_entry_alt2 = tk.Entry(output_frame, width=10)
 
 output_label_alt1 = tk.Label(output_frame, text="g/mol", width=5, anchor="w")
 output_label_alt2 = tk.Label(output_frame, text="L", width=5, anchor="w")
+
+output_starinfo = tk.Label(output_frame, text=" ", anchor="w", font=(" ", 7))
 
 # Checkboxes in Output Frame
 state_checkbox1 = tk.IntVar()
@@ -316,7 +342,11 @@ output_checkbox2.grid(row=4, column=5)
 output_label_alt1.grid(row=1, column=4)
 output_label_alt2.grid(row=4, column=4)
 
-tk.Label(output_frame, text="Decimals:").grid(row=6, column=1)
+output_starinfo.grid(row=7, column=0, columnspan=6, sticky="w")
+
+tk.Label(output_frame, text="Round to:").grid(row=6, column=1, stick="n", pady=3)
+tk.Label(output_frame, text="Decimals").grid(row=6, column=3, stick="n", pady=3)
+
 output_slider.grid(row=6, column=2)
 
 for unittype in RADIOBUTTON_OPTIONS:
@@ -325,7 +355,6 @@ for unittype in RADIOBUTTON_OPTIONS:
 # White Space
 tk.Label(input_frame, text=" ").grid(row=3, column=0)
 tk.Label(output_frame, text=" ").grid(row=5, column=0)
-tk.Label(output_frame, text=" ").grid(row=7, column=0)
 
 # Yeah
 root.mainloop()
