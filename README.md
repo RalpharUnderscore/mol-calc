@@ -45,7 +45,7 @@ Then moles is converted into each unit respectively:
 - c = n/v
   
 If the swap checkbox is ticked, the following equations are used instead:
-- m = n/g
+- m = g/n
 - v = n/c
   
 Here's a good image to visualize the calculation:  
