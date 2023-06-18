@@ -6,7 +6,7 @@ import tkinter as tk
 #// TODO: Make the Swap Alt Values Checkbox actually work
 
 root = tk.Tk()
-root.title("MolCalc v1.1")
+root.title("MolCalc v1.1a")
 root.geometry("480x400")
 root.resizable(False, False)
 
@@ -83,10 +83,10 @@ def Calculate():
                     value_new = (altput_value1/value)
                 else:
                     value_new = (value*altput_value1)
-            else:                                               # If Molarity
+            else:                                               # If Molarity 
                 if state_checkbox2.get() == 1:                      # If swapped values for Molarity, the formula is reversed
-                    value_new = (altput_value2*value) # ? Turns out I messed up the Molarity formula earlier so now this is what this part of the code looks like
-                else:                                       
+                    value_new = (value/altput_value2)                   # ! ong i keep fucking this up
+                else:                                                   # ! why tf are they the same
                     value_new = (value/altput_value2)
         else:                                               # Otherwise, carry on by multiplying with its conversion factor
             value_new = (value*unittype.converfactor)
@@ -153,7 +153,7 @@ def SetUnitType():
 
     input_name_alt.grid(row=1, column=3, sticky="w")
 
-    input_unit = tk.Label(input_frame, text=current_unit_type.unit, width=10, anchor="w")
+    input_unit = tk.Label(input_frame, text=current_unit_type.unit, width=12, anchor="w")
     input_unit.grid(row=2, column=1, sticky="w")
 
     input_unit_alt = tk.Label(input_frame, text=current_unit_type.alt_unit, width=10, anchor="w")
@@ -229,7 +229,7 @@ Unit_mol = UnitType("Moles", "mol", None, None, 1)
 Unit_g = UnitType("Mass", "g", "Molecular Weight", "g/mol", None)
 Unit_v = UnitType("Volume", "L (@STP)", None, None, 22.4)
 Unit_n = UnitType("Particles", "x10^23 atoms", None, None, 6.02)
-Unit_cv = UnitType("Molarity", "mol/L", "Volume", "L", None)
+Unit_cv = UnitType("Molarity", "mol/L", "Volume (Solution)", "L", None)
 
 RADIOBUTTON_OPTIONS = [Unit_mol, Unit_g, Unit_v, Unit_n, Unit_cv]
 
@@ -303,7 +303,7 @@ input_name.grid(row=1, column=0, sticky="w")
 input_name_alt = tk.Label(input_frame, text="N/A", width=15)
 input_name_alt.grid(row=1, column=3, sticky="w")
 
-input_unit = tk.Label(input_frame, text=current_unit_type.alt_unit, width=10, anchor="w")
+input_unit = tk.Label(input_frame, text=current_unit_type.alt_unit, width=12, anchor="w")
 input_unit.grid(row=2, column=1, sticky="w")
 
 input_unit_alt = tk.Label(input_frame, text=current_unit_type.alt_unit, width=10, anchor="w")
