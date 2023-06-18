@@ -19,7 +19,7 @@
 - It works
 - Concentration now calculates moles by multiplying concentration with volume, which is the correct way. Formerly calculates moles by dividing concentration with volume, which is just wrong in every way
 
-##Introduction
+##Introduction:  
 molCalc.pyw is a unit conversion calculator for Chemistry (more specifically Stoichiometry).
 The units molCalc.pyw supports are Moles, Mass, Volume (at STP), Particles and Molarity. Once a unit type is selected and a value is given,
 the calculator will convert it into every other unit mentioned earlier. Under the Mass and Molarity units in the Output Frame, additional "Alt-Values" entries
@@ -27,7 +27,7 @@ are present. You may change these values to get different results. If none are g
 If you would like to calculate for their "Alt-Value" instead, for example, if you would like to calculate for Molecular Weight (g/mol) instead of Mass (g).
 You can tick the Swap Checkbox to calculate for Molecular Weight instead.
   
-##Calculation:
+##Calculation:  
 The Calculation of this program is relatively simple and comes from the fact that all units can be easily converted into moles and moles can be easily converted
 back to each unit.  
 Begin by converting input unit into moles:
