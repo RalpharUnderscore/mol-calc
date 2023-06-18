@@ -36,16 +36,18 @@ Begin by converting input unit into moles:
 - n = v/22.4 *(v @STP)*
 - n = N/6.02 *(keep in mind that the unit for particles this calculator uses is x10^23 atoms)*
 - n = cv
+  
 Then moles is converted into each unit respectively:
 - n = n
 - g = n\*m
 - v = n\*22.4
 - N = n\*6.02
 - c = n/v
+  
 If the swap checkbox is ticked, the following equations are used instead:
 - m = n/g
 - v = n/c
-
+  
 Here's a good image to visualize the calculation:  
 https://d20khd7ddkh5ls.cloudfront.net/img_5bd217010b9e-1.jpeg
 
