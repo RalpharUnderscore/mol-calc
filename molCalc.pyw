@@ -125,10 +125,6 @@ def ShowOutput(OUTPUT_VALUES, ROUNDED_FLAGS):
     else:
         output_starinfo["text"] = " "
 
-    
-
-
-
 # When a Radio Button is pressed in the input
 # current_unit_type holds the UnitType of the currently selected unit
 def SetUnitType():
